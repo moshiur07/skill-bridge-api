@@ -40,10 +40,11 @@ enum Role {
 }
 
 model TutorProfile {
-  id             String @id @default(uuid())
-  bio            String @db.Text
-  hourly_rate    Int    @db.Integer
-  rating_average Float  @default(0.0)
+  id             String  @id @default(uuid())
+  bio            String  @db.Text
+  hourly_rate    Int     @db.Integer
+  rating_average Float   @default(0.0)
+  isFeatured     Boolean @default(false)
 
   user_id String @unique
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
