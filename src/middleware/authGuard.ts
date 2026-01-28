@@ -1,0 +1,29 @@
+import { NextFunction, Request, Response } from "express";
+import { Role } from "../../generated/prisma";
+import { auth } from "../lib/auth";
+
+const authGuard = (...roles: Role[]) => {
+  return async function (req: Request, res: Response, next: NextFunction) {
+    const session = await auth.api.getSession({ headers: req.headers as any });
+    if (!session) {
+      res.status(401).json({
+        message: "You are not welcome",
+      });
+    }
+    req.user = {
+      id: session?.user.id!,
+      email: session?.user.email!,
+      name: session?.user.name!,
+      role: session?.user.role as string,
+    };
+    if (roles.length && !roles.includes(req.user.role as Role)) {
+      res.status(403).json({
+        success: false,
+        message: "Forbidden",
+      });
+    }
+    next();
+  };
+};
+
+export default authGuard;

@@ -2,32 +2,30 @@ import { Role, TutorProfile } from "../../../generated/prisma";
 import { prisma } from "../../lib/prisma";
 
 const createTutor = async (payload: any, user_id: string) => {
-  const data = { ...payload };
+  const data = { ...payload, user_id };
   delete data.category;
-  console.log(data);
-  const category: string[] = payload.category;
+  const category: number[] = payload.category;
   const result = await prisma.tutorProfile.create({ data });
   if (result) {
-    // * update role
-    await prisma.user.update({
-      where: {
-        id: user_id,
-      },
-      data: {
-        role: Role.tutor,
-      },
-    });
-    console.log("role updated");
-    // * update category
-    await prisma.tutorProfile.update({
-      where: { user_id: user_id },
-      data: {
-        categories: {
-          set: category.map((id) => ({ id })),
+    await prisma.$transaction([
+      //* Update  Role
+      prisma.user.update({
+        where: { id: user_id },
+        data: { role: Role.tutor },
+      }),
+
+      //   * Connect Categories
+      prisma.tutorProfile.update({
+        where: { user_id: user_id },
+        data: {
+          categories: {
+            connect: category.map((id) => ({ id: Number(id) })),
+          },
         },
-      },
-    });
-    console.log("category inserted updated");
+      }),
+    ]);
+
+    console.log("Role and Categories successfully updated");
   }
   return result;
 };
