@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  role       Role     @default(student)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  tutor_profile TutorProfile?
+  bookings      Booking[]     @relation("student_bookings")
+  name          String
+  emailVerified Boolean       @default(false)
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
+}
+
+enum Role {
+  student
+  tutor
+  admin
+}
+
+model TutorProfile {
+  id             String @id @default(uuid())
+  bio            String @db.Text
+  hourly_rate    Int    @db.Integer
+  rating_average Float  @default(0.0)
+
+  user_id String @unique
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  categories     Category[]
+  availabilities Availability[]
+  schedules      Schedule[]
+  bookings       Booking[]
+}
+
+model Category {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  description String?        @db.Text
+  tutors      TutorProfile[]
+}
+
+model Schedule {
+  id          String @id @default(uuid())
+  day_of_week Int
+  start_time  String
+  end_time    String
+
+  tutor_id String
+  tutor    TutorProfile @relation(fields: [tutor_id], references: [id], onDelete: Cascade)
+}
+
+model Availability {
+  id              String   @id @default(uuid())
+  start_date_time DateTime
+  end_date_time   DateTime
+  is_booked       Boolean  @default(false)
+
+  tutor_id String
+  tutor    TutorProfile @relation(fields: [tutor_id], references: [id], onDelete: Cascade)
+  booking  Booking?
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  total_price Int           @db.Integer
+  status      BookingStatus @default(pending)
+  created_at  DateTime      @default(now())
+
+  student_id String
+  student    User   @relation("student_bookings", fields: [student_id], references: [id])
+
+  tutor_id String
+  tutor    TutorProfile @relation(fields: [tutor_id], references: [id])
+
+  availability_id String       @unique
+  availability    Availability @relation(fields: [availability_id], references: [id])
+
+  review Review?
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  completed
+  cancelled
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  rating     Int
+  comment    String   @db.Text
+  created_at DateTime @default(now())
+
+  booking_id String  @unique
+  booking    Booking @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
