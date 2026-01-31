@@ -14,7 +14,7 @@ const createTutor = async (payload: any, user_id: string) => {
         data: { role: Role.tutor },
       }),
 
-      //   * Connect Categories
+      //* Connect Categories
       prisma.tutorProfile.update({
         where: { user_id: user_id },
         data: {
@@ -91,10 +91,88 @@ const getTutors = async ({
     },
     include: {
       categories: true,
-      user: true,
     },
   });
   return tutors;
+};
+
+const getSingleTutor = async (tutorId: string) => {
+  const tutor: TutorProfile | null = await prisma.tutorProfile.findUnique({
+    where: { id: tutorId },
+    include: {
+      categories: true,
+      user: true,
+      bookings: {
+        where: {
+          tutor_id: tutorId,
+        },
+        include: {
+          review: true,
+        },
+      },
+      schedules: true,
+      availabilities: true,
+    },
+  });
+  return tutor;
+};
+
+const updateSchedule = async (tutorId: string, scheduleData: any) => {
+  const schedule: any = {
+    day_of_week: scheduleData.day_of_week,
+    start_time: scheduleData.start_time,
+    end_time: scheduleData.end_time,
+  };
+
+  const availability = {
+    start_date_time: scheduleData.start_time,
+    end_date_time: scheduleData.end_time,
+    tutor_id: tutorId,
+  };
+  return await prisma.$transaction(
+    async (prisma) => {
+      await prisma.schedule.create({
+        data: {
+          ...schedule,
+          tutor_id: tutorId,
+        },
+      });
+      await prisma.availability.create({
+        data: { ...availability },
+      });
+    },
+    {
+      maxWait: 10000,
+      timeout: 20000,
+    },
+  );
+};
+
+const updateTutor = async (tutorId: string, updateData: any) => {
+  const dataToUpdate: any = { ...updateData };
+  const categoryIds: number[] = dataToUpdate.categories;
+  delete dataToUpdate.categories;
+
+  return await prisma.tutorProfile.update({
+    where: {
+      id: tutorId,
+    },
+    data: {
+      ...dataToUpdate,
+      categories: {
+        connect: categoryIds?.map((id) => ({ id: Number(id) })) || [],
+      },
+    },
+  });
+};
+
+const updateFeatured = async (tutorId: string, featured: boolean) => {
+  return await prisma.tutorProfile.update({
+    where: { id: tutorId },
+    data: {
+      isFeatured: featured,
+    },
+  });
 };
 
 const deleteTutor = async (tutorId: string) => {
@@ -108,4 +186,8 @@ export const tutorServices = {
   createTutor,
   getTutors,
   deleteTutor,
+  getSingleTutor,
+  updateSchedule,
+  updateTutor,
+  updateFeatured,
 };

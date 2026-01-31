@@ -73,10 +73,10 @@ model Schedule {
 }
 
 model Availability {
-  id              String   @id @default(uuid())
-  start_date_time DateTime
-  end_date_time   DateTime
-  is_booked       Boolean  @default(false)
+  id              String  @id @default(uuid())
+  start_date_time String
+  end_date_time   String
+  is_booked       Boolean @default(false)
 
   tutor_id String
   tutor    TutorProfile @relation(fields: [tutor_id], references: [id], onDelete: Cascade)

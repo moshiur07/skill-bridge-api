@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
 import { tutorServices } from "./tutor.service";
+import { Request, Response } from "express";
 
 const createTutor = async (req: Request, res: Response) => {
   const user_id = req.user?.id;
@@ -52,6 +52,87 @@ const getTutors = async (req: Request, res: Response) => {
   }
 };
 
+const getSingleTutor = async (req: Request, res: Response) => {
+  const tutorId = req.params.tutorId;
+  try {
+    const tutor = await tutorServices.getSingleTutor(tutorId as string);
+    res.status(200).json({
+      success: true,
+      data: tutor,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+    console.log(err);
+  }
+};
+
+// ! update schedule service
+const updateSchedule = async (req: Request, res: Response) => {
+  const tutorId = req.params.tutorId;
+  const scheduleData = req.body;
+  try {
+    const updatedSchedule = await tutorServices.updateSchedule(
+      tutorId as string,
+      scheduleData,
+    );
+    res.status(200).json({
+      success: true,
+      data: updatedSchedule,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+    console.log(err);
+  }
+};
+const updateTutor = async (req: Request, res: Response) => {
+  const tutorId = req.params.tutorId;
+  const updateData = req.body;
+  try {
+    const updateTutorData = await tutorServices.updateTutor(
+      tutorId as string,
+      updateData,
+    );
+    res.status(200).json({
+      success: true,
+      data: updateTutorData,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+    console.log(err);
+  }
+};
+
+const updateFeatured = async (req: Request, res: Response) => {
+  const tutorId = req.params.tutorId;
+  const { featured }: { featured: boolean } = req.body;
+
+  try {
+    const updatedTutor = await tutorServices.updateFeatured(
+      tutorId as string,
+      featured,
+    );
+    res.status(200).json({
+      success: true,
+      data: updatedTutor,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+    console.log(err);
+  }
+};
+
 const deleteTutor = async (req: Request, res: Response) => {
   const tutorId = req.params.tutorId;
   try {
@@ -73,4 +154,8 @@ export const tutorController = {
   createTutor,
   getTutors,
   deleteTutor,
+  getSingleTutor,
+  updateSchedule,
+  updateTutor,
+  updateFeatured,
 };
