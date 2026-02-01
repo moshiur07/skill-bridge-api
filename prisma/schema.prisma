@@ -84,10 +84,11 @@ model Availability {
 }
 
 model Booking {
-  id          String        @id @default(uuid())
-  total_price Int           @db.Integer
-  status      BookingStatus @default(pending)
-  created_at  DateTime      @default(now())
+  id             String        @id @default(uuid())
+  total_price    Int           @db.Integer
+  status         BookingStatus @default(pending)
+  created_at     DateTime      @default(now())
+  duration_hours Int           @db.Integer
 
   student_id String
   student    User   @relation("student_bookings", fields: [student_id], references: [id])

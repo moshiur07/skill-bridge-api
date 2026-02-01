@@ -3,6 +3,7 @@ import cors from "cors";
 import { auth } from "./lib/auth";
 import { toNodeHandler } from "better-auth/node";
 import { tutorRouter } from "./modules/tutor/tutor.routes";
+import { bookingsRouter } from "./modules/bookings/bookings.routes";
 
 const app: Application = express();
 
@@ -18,6 +19,9 @@ app.use(express.json());
 
 // * Tutors
 app.use("/api/tutor", tutorRouter);
+
+// * Bookings
+app.use("/api/bookings", bookingsRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
