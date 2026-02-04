@@ -5,6 +5,7 @@ import { toNodeHandler } from "better-auth/node";
 import { tutorRouter } from "./modules/tutor/tutor.routes";
 import { bookingsRouter } from "./modules/bookings/bookings.routes";
 import { reviewsRouter } from "./modules/reviews/review.routes";
+import { categoryRouter } from "./modules/categories/category.routes";
 
 const app: Application = express();
 
@@ -26,6 +27,10 @@ app.use("/api/bookings", bookingsRouter);
 
 // * Reviews
 app.use("/api/reviews", reviewsRouter);
+
+// * category
+
+app.use("/api/category", categoryRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
