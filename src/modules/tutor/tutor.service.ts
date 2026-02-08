@@ -91,6 +91,12 @@ const getTutors = async ({
     },
     include: {
       categories: true,
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
     },
   });
   return tutors;
