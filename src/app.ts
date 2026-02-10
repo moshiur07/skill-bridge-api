@@ -16,13 +16,6 @@ const allowedOrigins = [
 ].filter(Boolean); // Remove undefined values
 
 const app: Application = express();
-
-// app.use(
-//   cors({
-//     origin: process.env.APP_URL || "http://localhost:3000",
-//     credentials: true,
-//   }),
-// );
 app.use(
   cors({
     origin: (origin, callback) => {

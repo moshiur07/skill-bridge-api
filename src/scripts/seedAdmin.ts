@@ -18,12 +18,12 @@ const seedAdmin = async () => {
     console.log(existingAdmin);
     if (existingAdmin) throw new Error("Admin user already exists");
     const createAdmin = await fetch(
-      "http://localhost:5000/api/auth/sign-up/email",
+      `${process.env.BETTER_AUTH_URL}/sign-up/email`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Origin: "http://localhost:3000",
+          Origin: `${process.env.APP_URL}`,
         },
         credentials: "include",
         body: JSON.stringify(adminData),
