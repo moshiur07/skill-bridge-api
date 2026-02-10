@@ -45,6 +45,7 @@ model TutorProfile {
   hourly_rate    Int     @db.Integer
   rating_average Float   @default(0.0)
   isFeatured     Boolean @default(false)
+  image          String?
 
   user_id String @unique
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
