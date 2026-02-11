@@ -1,4 +1,4 @@
-import { Role, TutorProfile } from "../../../generated/prisma";
+import { Role, TutorProfile } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 
 const createTutor = async (payload: any, user_id: string) => {

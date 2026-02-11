@@ -1,6 +1,5 @@
-import { BookingStatus } from "../../../generated/prisma";
+import { BookingStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
-
 const createReview = async (
   rating: number,
   comment: string,
