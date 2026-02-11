@@ -1,5 +1,5 @@
 import { BookingStatus } from "../../../generated/prisma";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 
 const createBooking = async (
   bookingData: {

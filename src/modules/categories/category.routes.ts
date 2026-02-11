@@ -1,6 +1,6 @@
 import { Router } from "express";
-import authGuard from "../../middleware/authGuard";
-import { categoryController } from "./category.controller";
+import authGuard from "../../middleware/authGuard.js";
+import { categoryController } from "./category.controller.js";
 
 const router = Router();
 

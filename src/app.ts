@@ -1,11 +1,11 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import { auth } from "./lib/auth";
+import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
-import { tutorRouter } from "./modules/tutor/tutor.routes";
-import { bookingsRouter } from "./modules/bookings/bookings.routes";
-import { reviewsRouter } from "./modules/reviews/review.routes";
-import { categoryRouter } from "./modules/categories/category.routes";
+import { tutorRouter } from "./modules/tutor/tutor.routes.js";
+import { bookingsRouter } from "./modules/bookings/bookings.routes.js";
+import { reviewsRouter } from "./modules/reviews/review.routes.js";
+import { categoryRouter } from "./modules/categories/category.routes.js";
 
 const allowedOrigins = [
   process.env.APP_URL || "http://localhost:3000",

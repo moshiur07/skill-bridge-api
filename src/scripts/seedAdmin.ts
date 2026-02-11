@@ -1,5 +1,5 @@
 import { Role } from "../../generated/prisma";
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 
 const seedAdmin = async () => {
   try {

@@ -1,4 +1,4 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma.js";
 
 const categories = [
   // --- 10 ACADEMIC SUBJECTS ---

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Role } from "../../generated/prisma";
-import { auth } from "../lib/auth";
+import { auth } from "../lib/auth.js";
 
 const authGuard = (...roles: Role[]) => {
   return async function (req: Request, res: Response, next: NextFunction) {
