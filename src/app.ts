@@ -47,7 +47,7 @@ app.all("/api/auth/{*any}", toNodeHandler(auth));
 app.use(express.json());
 
 // * Tutors
-app.use("/api/tutor", tutorRouter);
+app.use("/api/tutors", tutorRouter);
 
 // * Bookings
 app.use("/api/bookings", bookingsRouter);
