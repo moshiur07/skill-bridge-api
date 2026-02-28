@@ -6,6 +6,8 @@ import { tutorRouter } from "./modules/tutor/tutor.routes.js";
 import { bookingsRouter } from "./modules/bookings/bookings.routes.js";
 import { reviewsRouter } from "./modules/reviews/review.routes.js";
 import { categoryRouter } from "./modules/categories/category.routes.js";
+import { usersRoutes } from "./modules/users/users.routes.js";
+import { adminRoutes } from "./modules/admin/admin.routes.js";
 
 const allowedOrigins = [
   process.env.APP_URL || "http://localhost:3000",
@@ -56,6 +58,13 @@ app.use("/api/reviews", reviewsRouter);
 // * category
 
 app.use("/api/category", categoryRouter);
+
+// * users
+app.use("/api/users", usersRoutes);
+
+// * admin
+
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");

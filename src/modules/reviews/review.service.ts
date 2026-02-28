@@ -1,17 +1,17 @@
 import { BookingStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+
 const createReview = async (
   rating: number,
   comment: string,
-  bookingId: string,
+  booking_id: string,
 ) => {
   return await prisma.$transaction(async (prisma) => {
     //* is the booking completed?
     const booking = await prisma.booking.findUniqueOrThrow({
-      where: { id: bookingId, status: BookingStatus.completed },
+      where: { id: booking_id, status: BookingStatus.completed },
       include: { tutor: { select: { rating_average: true } } },
     });
-
     //* update tutor rating
     const updatedRating = await prisma.tutorProfile.update({
       where: { id: booking.tutor_id },
@@ -25,7 +25,7 @@ const createReview = async (
       data: {
         rating: updatedRating.rating_average,
         comment,
-        booking_id: bookingId,
+        booking_id: booking_id,
       },
     });
     return newReview;

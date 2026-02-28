@@ -5,22 +5,22 @@ const createBooking = async (
   bookingData: {
     duration_hours: number;
     tutor_id: string;
+    subject: string;
+    availability_id: string;
   },
   user_id: string,
 ) => {
-  const { duration_hours, tutor_id } = bookingData;
-
+  const { duration_hours, tutor_id, subject, availability_id } = bookingData;
+  console.log({ bookingData });
   const tutor = await prisma.tutorProfile.findUniqueOrThrow({
     where: { id: tutor_id },
     include: { availabilities: true },
   });
-  const availabilities = tutor.availabilities;
-  if (availabilities.length === 0) {
-    throw new Error("No availabilities found for this tutor");
-  }
-  const availability_id = availabilities.find((avail) => !avail.is_booked)?.id;
-  if (!availability_id) {
-    throw new Error("All availabilities for this tutor are booked");
+  const availability = await prisma.availability.findUniqueOrThrow({
+    where: { id: bookingData.availability_id, is_booked: false },
+  });
+  if (!availability) {
+    throw new Error("No availabilities found");
   }
 
   const total_price = tutor.hourly_rate * duration_hours;
@@ -31,8 +31,9 @@ const createBooking = async (
     duration_hours: duration_hours,
     total_price: total_price,
     availability_id: availability_id,
+    subject: subject,
   };
-
+  console.log("data before booking", data);
   return await prisma.booking.create({
     data: data,
   });
@@ -40,35 +41,96 @@ const createBooking = async (
 
 const getBookings = async (user_id: string, role: string) => {
   if (role === "student") {
-    return await prisma.booking.findMany({
+    const bookings = await prisma.booking.findMany({
       where: { student_id: user_id },
       include: {
-        tutor: true,
-        student: true,
-        review: {
-          select: {
-            rating: true,
-            comment: true,
+        tutor: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
+        student: true,
+        review: { select: { rating: true, comment: true } },
       },
     });
+    // Calculate stats
+    const stats = {
+      total_bookings: bookings.length,
+      total_spent: bookings
+        .filter((b) => b.status === "completed")
+        .reduce((sum, booking) => sum + booking.total_price, 0),
+
+      completed: bookings.filter((b) => b.status === "completed").length,
+
+      upcoming: bookings.filter((b) => b.status === "pending").length,
+    };
+
+    return {
+      bookings,
+      stats,
+    };
   } else if (role === "tutor") {
-    return await prisma.booking.findMany({
-      where: { tutor_id: user_id },
+    const tutorProfile = await prisma.tutorProfile.findUnique({
+      where: { user_id: user_id },
+    });
+
+    if (!tutorProfile) {
+      throw new Error("Tutor profile not found");
+    }
+
+    const bookings = await prisma.booking.findMany({
+      where: { tutor_id: tutorProfile.id },
       include: {
-        tutor: true,
+        tutor: {
+          include: {
+            categories: true,
+            availabilities: true,
+          },
+        },
         student: true,
         review: true,
       },
     });
+    if (!bookings) throw new Error("Tutor not found");
+
+    // Calculate stats
+    const stats = {
+      total_earnings: bookings
+        .filter((b) => b.status === "completed")
+        .reduce((sum, booking) => sum + booking.total_price, 0),
+
+      completed_sessions: bookings.filter((b) => b.status === "completed")
+        .length,
+
+      pending_bookings: bookings.filter((b) => b.status === "pending").length,
+
+      total_reviews: bookings.filter((b) => b.review).length,
+
+      rating_average:
+        bookings.filter((b) => b.review).length > 0
+          ? bookings
+              .filter((b) => b.review)
+              .reduce((sum, b) => sum + (b.review?.rating || 0), 0) /
+            bookings.filter((b) => b.review).length
+          : 0,
+    };
+
+    return {
+      bookings,
+      stats,
+    };
   }
+
   throw new Error("Invalid role");
 };
 
 const getBookingsById = async (booking_id: string, role: string) => {
   if (role === "student") {
-    return await prisma.booking.findFirst({
+    return await prisma.booking.findFirstOrThrow({
       where: { id: booking_id },
       include: {
         tutor: true,
@@ -81,7 +143,7 @@ const getBookingsById = async (booking_id: string, role: string) => {
       },
     });
   } else if (role === "tutor") {
-    return await prisma.booking.findFirst({
+    return await prisma.booking.findFirstOrThrow({
       where: { id: booking_id },
       include: {
         tutor: true,

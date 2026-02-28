@@ -28,7 +28,7 @@ const getTutors = async (req: Request, res: Response) => {
 
   const price = Number(req.query.price) || undefined;
   const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 5;
+  const limit = Number(req.query.limit) || 15;
   const skip = (page - 1) * limit;
   try {
     const tutors = await tutorServices.getTutors({
@@ -90,6 +90,63 @@ const updateSchedule = async (req: Request, res: Response) => {
     console.log(err);
   }
 };
+const getAvailability = async (req: Request, res: Response) => {
+  const tutorId = req.params.tutorId;
+  try {
+    const availability = await tutorServices.getAvailability(tutorId as string);
+    res.status(200).json({
+      success: true,
+      data: availability,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+    console.log(err);
+  }
+};
+
+const setAvailability = async (req: Request, res: Response) => {
+  const tutorId = req.params.tutorId;
+  const availabilityData = req.body;
+  try {
+    const availability = await tutorServices.setAvailability(
+      tutorId as string,
+      availabilityData,
+    );
+    res.status(200).json({
+      success: true,
+      data: availability,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+    console.log(err);
+  }
+};
+
+const deleteAvailability = async (req: Request, res: Response) => {
+  const availabilityId = req.params.availabilityId;
+  try {
+    const deletedAvailability = await tutorServices.deleteAvailability(
+      availabilityId as string,
+    );
+    res.status(200).json({
+      success: true,
+      data: deletedAvailability,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+    console.log(err);
+  }
+};
+
 const updateTutor = async (req: Request, res: Response) => {
   const tutorId = req.params.tutorId;
   const updateData = req.body;
@@ -158,4 +215,7 @@ export const tutorController = {
   updateSchedule,
   updateTutor,
   updateFeatured,
+  getAvailability,
+  setAvailability,
+  deleteAvailability,
 };

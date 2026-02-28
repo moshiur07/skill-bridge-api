@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,116 +7,95 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  role       Role     @default(student)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  tutor_profile TutorProfile?
-  bookings      Booking[]     @relation("student_bookings")
+  id            String        @id @default(uuid())
+  email         String        @unique
+  role          Role          @default(student)
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
   name          String
   emailVerified Boolean       @default(false)
   image         String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  sessions      Session[]
+  isBanned      Boolean       @default(false)
+  bookings      Booking[]     @relation("student_bookings")
+  tutor_profile TutorProfile?
   accounts      Account[]
+  sessions      Session[]
 
   @@map("user")
 }
 
-enum Role {
-  student
-  tutor
-  admin
-}
-
 model TutorProfile {
-  id             String  @id @default(uuid())
-  bio            String  @db.Text
-  hourly_rate    Int     @db.Integer
-  rating_average Float   @default(0.0)
-  isFeatured     Boolean @default(false)
+  id             String         @id @default(uuid())
+  bio            String
+  hourly_rate    Int
+  rating_average Float          @default(0.0)
+  user_id        String         @unique
+  isFeatured     Boolean        @default(false)
   image          String?
-
-  user_id String @unique
-  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  categories     Category[]
   availabilities Availability[]
-  schedules      Schedule[]
   bookings       Booking[]
+  schedules      Schedule[]
+  user           User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  categories     Category[]     @relation("CategoryToTutorProfile")
 }
 
 model Category {
-  id          Int            @id @default(autoincrement())
   name        String         @unique
-  description String?        @db.Text
-  tutors      TutorProfile[]
+  description String?
+  id          Int            @id @default(autoincrement())
+  tutors      TutorProfile[] @relation("CategoryToTutorProfile")
 }
 
 model Schedule {
-  id          String @id @default(uuid())
+  id          String       @id @default(uuid())
   day_of_week Int
   start_time  String
   end_time    String
-
-  tutor_id String
-  tutor    TutorProfile @relation(fields: [tutor_id], references: [id], onDelete: Cascade)
+  tutor_id    String
+  tutor       TutorProfile @relation(fields: [tutor_id], references: [id], onDelete: Cascade)
 }
 
 model Availability {
-  id              String  @id @default(uuid())
+  id              String       @id @default(uuid())
   start_date_time String
   end_date_time   String
-  is_booked       Boolean @default(false)
-
-  tutor_id String
-  tutor    TutorProfile @relation(fields: [tutor_id], references: [id], onDelete: Cascade)
-  booking  Booking?
+  is_booked       Boolean      @default(false)
+  tutor_id        String
+  tutor           TutorProfile @relation(fields: [tutor_id], references: [id], onDelete: Cascade)
+  booking         Booking?
 }
 
 model Booking {
-  id             String        @id @default(uuid())
-  total_price    Int           @db.Integer
-  status         BookingStatus @default(pending)
-  created_at     DateTime      @default(now())
-  duration_hours Int           @db.Integer
-
-  student_id String
-  student    User   @relation("student_bookings", fields: [student_id], references: [id])
-
-  tutor_id String
-  tutor    TutorProfile @relation(fields: [tutor_id], references: [id])
-
-  availability_id String       @unique
-  availability    Availability @relation(fields: [availability_id], references: [id])
-
-  review Review?
-}
-
-enum BookingStatus {
-  pending
-  confirmed
-  completed
-  cancelled
+  id              String        @id @default(uuid())
+  total_price     Int
+  status          BookingStatus @default(pending)
+  created_at      DateTime      @default(now())
+  student_id      String
+  tutor_id        String
+  availability_id String        @unique
+  duration_hours  Int
+  subject         String
+  availability    Availability  @relation(fields: [availability_id], references: [id])
+  student         User          @relation("student_bookings", fields: [student_id], references: [id])
+  tutor           TutorProfile  @relation(fields: [tutor_id], references: [id])
+  review          Review?
 }
 
 model Review {
   id         String   @id @default(uuid())
   rating     Int
-  comment    String   @db.Text
+  comment    String
   created_at DateTime @default(now())
-
-  booking_id String  @unique
-  booking    Booking @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  booking_id String   @unique
+  booking    Booking  @relation(fields: [booking_id], references: [id], onDelete: Cascade)
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -130,7 +103,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -140,7 +112,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -150,6 +121,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -165,4 +137,17 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+enum Role {
+  student
+  tutor
+  admin
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  completed
+  cancelled
 }

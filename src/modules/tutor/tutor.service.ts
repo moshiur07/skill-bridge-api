@@ -103,7 +103,7 @@ const getTutors = async ({
 };
 
 const getSingleTutor = async (tutorId: string) => {
-  const tutor: TutorProfile | null = await prisma.tutorProfile.findUnique({
+  return await prisma.tutorProfile.findUnique({
     where: { id: tutorId },
     include: {
       categories: true,
@@ -116,11 +116,9 @@ const getSingleTutor = async (tutorId: string) => {
           review: true,
         },
       },
-      schedules: true,
       availabilities: true,
     },
   });
-  return tutor;
 };
 
 const updateSchedule = async (tutorId: string, scheduleData: any) => {
@@ -172,6 +170,44 @@ const updateTutor = async (tutorId: string, updateData: any) => {
   });
 };
 
+const getAvailability = async (tutorId: string) => {
+  return await prisma.availability.findMany({
+    where: {
+      tutor_id: tutorId,
+    },
+  });
+};
+const setAvailability = async (tutorId: string, availabilityData: any) => {
+  const availability = {
+    start_date_time: availabilityData.start_date_time,
+    end_date_time: availabilityData.end_date_time,
+    tutor_id: tutorId,
+  };
+  console.log("api is hitted!!!!!!");
+  return await prisma.availability.create({
+    data: {
+      ...availability,
+    },
+  });
+};
+
+const deleteAvailability = async (availabilityId: string) => {
+  // check if the availability is booked or not before deleting
+  const isBooked = await prisma.booking.findFirstOrThrow({
+    where: {
+      availability_id: availabilityId,
+    },
+  });
+  if (isBooked) {
+    throw new Error("Availability is booked and cannot be deleted");
+  }
+  return await prisma.availability.delete({
+    where: {
+      id: availabilityId,
+    },
+  });
+};
+
 const updateFeatured = async (tutorId: string, featured: boolean) => {
   return await prisma.tutorProfile.update({
     where: { id: tutorId },
@@ -196,4 +232,7 @@ export const tutorServices = {
   updateSchedule,
   updateTutor,
   updateFeatured,
+  getAvailability,
+  setAvailability,
+  deleteAvailability,
 };

@@ -14,6 +14,20 @@ router.put(
 );
 router.put("/:tutorId", authGuard("tutor"), tutorController.updateTutor);
 
+router.get("/:tutorId/availability", tutorController.getAvailability);
+
+router.post(
+  "/:tutorId/availability",
+  authGuard("tutor"),
+  tutorController.setAvailability,
+);
+
+router.delete(
+  "/availability/:availabilityId",
+  authGuard("tutor"),
+  tutorController.deleteAvailability,
+);
+
 router.put(
   "/:tutorId/featured",
   authGuard("admin"),

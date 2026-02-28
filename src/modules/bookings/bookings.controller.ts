@@ -25,7 +25,6 @@ const createBooking = async (req: Request, res: Response) => {
 const getBookings = async (req: Request, res: Response) => {
   const user_id = req.user?.id;
   const role = req.user?.role;
-  console.log(`this req is from a ${role}`);
   try {
     const result = await bookingServices.getBookings(
       user_id as string,
@@ -33,7 +32,8 @@ const getBookings = async (req: Request, res: Response) => {
     );
     res.status(200).json({
       success: true,
-      data: result,
+      data: result?.bookings,
+      stats: result?.stats,
     });
   } catch (err: any) {
     res.status(400).json({
@@ -45,7 +45,6 @@ const getBookings = async (req: Request, res: Response) => {
 const getBookingById = async (req: Request, res: Response) => {
   const role = req.user?.role;
   const booking_id = req.params.id;
-  console.log(`this req is from a ${role}`);
   try {
     const result = await bookingServices.getBookingsById(
       booking_id as string,
