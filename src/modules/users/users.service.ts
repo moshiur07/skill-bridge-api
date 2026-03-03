@@ -11,6 +11,7 @@ const handleBan = async (user_id: string) => {
   if (!user) {
     throw new Error("User not found");
   }
+  console.log("user got :", user);
   const updatedUser = await prisma.user.update({
     where: {
       id: user_id,
@@ -19,8 +20,10 @@ const handleBan = async (user_id: string) => {
       isBanned: !user.isBanned,
     },
   });
+  console.log({ updatedUser, banning: user?.isBanned });
   return updatedUser;
 };
+``;
 
 const getUserById = async (user_id: string) => {
   const user = await prisma.user.findUnique({
@@ -77,10 +80,22 @@ const deleteUser = async (user_id: string) => {
   return { message: "User deleted successfully" };
 };
 
+const getTutorIdByUserId = async (user_id: string) => {
+  const tutorProfile = await prisma.tutorProfile.findUnique({
+    where: {
+      user_id: user_id,
+    },
+  });
+  if (!tutorProfile) {
+    throw new Error("Tutor profile not found for the given user ID");
+  }
+  return tutorProfile.id;
+};
 export const userService = {
   handleBan,
   getUserById,
   getUsers,
   updateUserData,
   deleteUser,
+  getTutorIdByUserId,
 };

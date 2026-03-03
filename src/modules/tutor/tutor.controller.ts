@@ -170,13 +170,9 @@ const updateTutor = async (req: Request, res: Response) => {
 
 const updateFeatured = async (req: Request, res: Response) => {
   const tutorId = req.params.tutorId;
-  const { featured }: { featured: boolean } = req.body;
 
   try {
-    const updatedTutor = await tutorServices.updateFeatured(
-      tutorId as string,
-      featured,
-    );
+    const updatedTutor = await tutorServices.updateFeatured(tutorId as string);
     res.status(200).json({
       success: true,
       data: updatedTutor,

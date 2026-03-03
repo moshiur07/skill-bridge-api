@@ -5,22 +5,35 @@ const getAdminDashboardStats = async () => {
   const totalTutors = await prisma.tutorProfile.count();
   const totalBookings = await prisma.booking.count();
   const totalReviews = await prisma.review.count();
-
+  const totalRevenue = await prisma.booking.aggregate({
+    _sum: {
+      total_price: true,
+    },
+  });
   return {
     totalUsers,
     totalTutors,
     totalBookings,
     totalReviews,
+    totalRevenue: totalRevenue._sum.total_price || 0,
   };
 };
 
 const getUsersByAdmin = async (role?: string) => {
   const whereCondition: any = {};
-  if (role) {
-    whereCondition.role = role;
+
+  // Only apply the filter if role exists and it's NOT 'all'
+  if (role && role.toLowerCase() !== "all") {
+    // Handling your "empty string" logic
+    if (role.trim() === "") {
+      whereCondition.role = null;
+    } else {
+      whereCondition.role = role;
+    }
   }
+
   const users = await prisma.user.findMany({
-    where: whereCondition,
+    where: whereCondition, // If role was 'all', this is just {} (returns everyone)
     select: {
       id: true,
       name: true,
@@ -29,14 +42,19 @@ const getUsersByAdmin = async (role?: string) => {
       role: true,
       isBanned: true,
       createdAt: true,
+      tutor_profile: {
+        select: { isFeatured: true },
+      },
     },
     orderBy: {
       createdAt: "desc",
     },
   });
-  const count = await users.length;
 
-  return { users, count };
+  return {
+    users,
+    count: users.length, // No need to 'await' a .length property!
+  };
 };
 
 const getAllBookings = async () => {

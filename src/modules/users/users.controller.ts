@@ -47,6 +47,22 @@ const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+const getTutorIdByUserId = async (req: Request, res: Response) => {
+  const user_id = req?.params?.userId;
+  try {
+    const result = await userService.getTutorIdByUserId(user_id as string);
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 const updateUserData = async (req: Request, res: Response) => {
   const user_id = req?.params?.id;
   const data = req.body;
@@ -84,4 +100,5 @@ export const usersController = {
   getUsers,
   updateUserData,
   deleteUser,
+  getTutorIdByUserId,
 };

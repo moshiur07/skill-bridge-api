@@ -11,11 +11,11 @@ import { adminRoutes } from "./modules/admin/admin.routes.js";
 
 const allowedOrigins = [
   process.env.APP_URL || "http://localhost:3000",
-  process.env.PROD_APP_URL, // Production frontend URL
+  process.env.PROD_APP_URL,
   "http://localhost:3000",
   "http://localhost:4000",
   "http://localhost:5000",
-].filter(Boolean); // Remove undefined values
+].filter(Boolean);
 
 const app: Application = express();
 app.use(
@@ -24,15 +24,17 @@ app.use(
       // Allow requests with no origin (mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
 
-      // Check if origin is in allowedOrigins or matches Vercel preview pattern
+      // Check if origin is in allowedOrigins or matches deployment patterns
       const isAllowed =
         allowedOrigins.includes(origin) ||
-        /^https:\/\/next-blog-client.*\.vercel\.app$/.test(origin) ||
-        /^https:\/\/.*\.vercel\.app$/.test(origin); // Any Vercel deployment
+        /^https:\/\/.*\.vercel\.app$/.test(origin) || // Vercel deployments
+        /^https:\/\/.*\.onrender\.com$/.test(origin) || // Render deployments
+        /^https:\/\/.*\.netlify\.app$/.test(origin); // Netlify deployments (optional)
 
       if (isAllowed) {
         callback(null, true);
       } else {
+        console.warn(`CORS blocked origin: ${origin}`); // For debugging
         callback(new Error(`Origin ${origin} not allowed by CORS`));
       }
     },

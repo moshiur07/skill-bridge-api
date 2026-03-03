@@ -16,7 +16,7 @@ const createBooking = async (
     where: { id: tutor_id },
     include: { availabilities: true },
   });
-  const availability = await prisma.availability.findUniqueOrThrow({
+  const availability = await prisma.availability.findUnique({
     where: { id: bookingData.availability_id, is_booked: false },
   });
   if (!availability) {
@@ -34,6 +34,12 @@ const createBooking = async (
     subject: subject,
   };
   console.log("data before booking", data);
+
+  await prisma.availability.update({
+    where: { id: availability_id },
+    data: { is_booked: true },
+  });
+
   return await prisma.booking.create({
     data: data,
   });
@@ -130,7 +136,7 @@ const getBookings = async (user_id: string, role: string) => {
 
 const getBookingsById = async (booking_id: string, role: string) => {
   if (role === "student") {
-    return await prisma.booking.findFirstOrThrow({
+    return await prisma.booking.findUnique({
       where: { id: booking_id },
       include: {
         tutor: true,
@@ -143,7 +149,7 @@ const getBookingsById = async (booking_id: string, role: string) => {
       },
     });
   } else if (role === "tutor") {
-    return await prisma.booking.findFirstOrThrow({
+    return await prisma.booking.findUnique({
       where: { id: booking_id },
       include: {
         tutor: true,
@@ -152,7 +158,7 @@ const getBookingsById = async (booking_id: string, role: string) => {
       },
     });
   } else if (role === "admin") {
-    return await prisma.booking.findFirst({
+    return await prisma.booking.findUnique({
       where: { id: booking_id },
       include: {
         tutor: true,

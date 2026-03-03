@@ -103,14 +103,17 @@ const getTutors = async ({
 };
 
 const getSingleTutor = async (tutorId: string) => {
-  return await prisma.tutorProfile.findUnique({
-    where: { id: tutorId },
+  // in this case dynamic params could have userId as tutorId or it could be tutorId itself, so first we will try to find with userId and if not found then we will try with tutorId
+  const getProfileByUserId = await prisma.tutorProfile.findUnique({
+    where: { user_id: tutorId },
     include: {
       categories: true,
       user: true,
       bookings: {
         where: {
-          tutor_id: tutorId,
+          tutor: {
+            user_id: tutorId,
+          },
         },
         include: {
           review: true,
@@ -119,6 +122,27 @@ const getSingleTutor = async (tutorId: string) => {
       availabilities: true,
     },
   });
+
+  if (!getProfileByUserId) {
+    return await prisma.tutorProfile.findUnique({
+      where: { id: tutorId },
+      include: {
+        categories: true,
+        user: true,
+        bookings: {
+          where: {
+            tutor_id: tutorId,
+          },
+          include: {
+            review: true,
+          },
+        },
+        availabilities: true,
+      },
+    });
+  }
+
+  return getProfileByUserId;
 };
 
 const updateSchedule = async (tutorId: string, scheduleData: any) => {
@@ -192,33 +216,63 @@ const setAvailability = async (tutorId: string, availabilityData: any) => {
 };
 
 const deleteAvailability = async (availabilityId: string) => {
-  // check if the availability is booked or not before deleting
-  const isBooked = await prisma.booking.findFirstOrThrow({
-    where: {
-      availability_id: availabilityId,
-    },
-  });
-  if (isBooked) {
-    throw new Error("Availability is booked and cannot be deleted");
-  }
-  return await prisma.availability.delete({
+  const avail = await prisma.availability.findUnique({
     where: {
       id: availabilityId,
     },
   });
+  if (!avail || avail.is_booked) {
+    throw new Error("Only unbooked or completed slots can be removed.");
+  }
+  // return await prisma.availability.delete({
+  //   where: {
+  //     id: availabilityId,
+  //   },
+  // });
+  return await prisma.$transaction(async (tx) => {
+    // 1. Delete the history first (The "Children")
+    await tx.booking.deleteMany({
+      where: { availability_id: availabilityId },
+    });
+
+    // 2. Now delete the slot (The "Parent")
+    return await tx.availability.delete({
+      where: { id: availabilityId },
+    });
+  });
 };
 
-const updateFeatured = async (tutorId: string, featured: boolean) => {
+const updateFeatured = async (tutorId: string) => {
+  // 1. Fetch the current profile to see the existing state
+  const profile = await prisma.tutorProfile.findUnique({
+    where: { user_id: tutorId },
+    select: { isFeatured: true }, // Optimization: only select the field we need
+  });
+
+  if (!profile) {
+    throw new Error("Tutor profile not found");
+  }
+
+  // 2. Update with the opposite value
   return await prisma.tutorProfile.update({
-    where: { id: tutorId },
+    where: { user_id: tutorId },
     data: {
-      isFeatured: featured,
+      isFeatured: !profile.isFeatured,
     },
   });
 };
 
 const deleteTutor = async (tutorId: string) => {
   // ! had to check is there any booking on going with this tutor before deleting
+  const ongoingBooking = await prisma.booking.findFirst({
+    where: {
+      tutor_id: tutorId,
+      status: "completed",
+    },
+  });
+  if (ongoingBooking) {
+    throw new Error("Tutor has ongoing bookings and cannot be deleted");
+  }
   return await prisma.tutorProfile.delete({
     where: { id: tutorId },
   });
