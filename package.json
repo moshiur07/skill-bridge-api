@@ -4,11 +4,14 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsx watch ./src/server.ts",
-    "seed:admin": "npx tsx src/scripts/seedAdmin.ts",
-    "build": "tsc && npx prisma generate",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "dev": "tsx watch src/server.ts",
+    "lint": "eslint .",
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "studio": "prisma studio",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -24,13 +27,16 @@
     "tsx": "^4.21.0"
   },
   "dependencies": {
+    "@better-auth/prisma-adapter": "^1.5.6",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "better-auth": "^1.4.17",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "http-status": "^2.1.0",
     "pg": "^8.17.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "zod": "^4.3.6"
   }
 }

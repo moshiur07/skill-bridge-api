@@ -1,12 +1,21 @@
 import { Router } from "express";
 import { tutorController } from "./tutor.controller.js";
 import authGuard from "../../middleware/authGuard.js";
+import { validateRequest } from "../../../helper/validateSchema.js";
+import { createTutorZodSchema } from "./tutor.validation.js";
 
 const router = Router();
 
-router.post("/", authGuard("student"), tutorController.createTutor);
+router.post(
+  "/",
+  authGuard("student", "tutor"),
+  // validateRequest(createTutorZodSchema),
+  tutorController.createTutor,
+);
+
 router.get("/", tutorController.getTutors);
 router.get("/:tutorId", tutorController.getSingleTutor);
+
 router.put(
   "/:tutorId/schedule",
   authGuard("tutor"),

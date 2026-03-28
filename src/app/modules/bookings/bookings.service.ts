@@ -1,5 +1,7 @@
 import { BookingStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+import AppError from "../../../helper/AppError.js";
+import status from "http-status";
 
 const createBooking = async (
   bookingData: {
@@ -20,7 +22,7 @@ const createBooking = async (
     where: { id: bookingData.availability_id, is_booked: false },
   });
   if (!availability) {
-    throw new Error("No availabilities found");
+    throw new AppError(status.NOT_FOUND, "No availabilities found");
   }
 
   const total_price = tutor.hourly_rate * duration_hours;
@@ -85,7 +87,7 @@ const getBookings = async (user_id: string, role: string) => {
     });
 
     if (!tutorProfile) {
-      throw new Error("Tutor profile not found");
+      throw new AppError(status.NOT_FOUND, "Tutor profile not found");
     }
 
     const bookings = await prisma.booking.findMany({
@@ -101,7 +103,7 @@ const getBookings = async (user_id: string, role: string) => {
         review: true,
       },
     });
-    if (!bookings) throw new Error("Tutor not found");
+    if (!bookings) throw new AppError(status.NOT_FOUND, "Tutor not found");
 
     // Calculate stats
     const stats = {
@@ -131,7 +133,7 @@ const getBookings = async (user_id: string, role: string) => {
     };
   }
 
-  throw new Error("Invalid role");
+  throw new AppError(status.BAD_REQUEST, "Invalid role");
 };
 
 const getBookingsById = async (booking_id: string, role: string) => {
@@ -168,7 +170,7 @@ const getBookingsById = async (booking_id: string, role: string) => {
       },
     });
   }
-  throw new Error("Invalid role");
+  throw new AppError(status.BAD_REQUEST, "Invalid role");
 };
 
 const payment = async (booking_id: string) => {
@@ -204,10 +206,13 @@ const deleteBooking = async (booking_id: string) => {
     where: { id: booking_id },
   });
   if (!booking) {
-    throw new Error("Booking not found");
+    throw new AppError(status.NOT_FOUND, "Booking not found");
   }
   if (booking.status !== BookingStatus.pending) {
-    throw new Error("Only pending bookings can be deleted");
+    throw new AppError(
+      status.BAD_REQUEST,
+      "Only pending bookings can be deleted",
+    );
   }
   return await prisma.booking.delete({
     where: { id: booking_id },

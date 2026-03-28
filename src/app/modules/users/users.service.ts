@@ -1,3 +1,5 @@
+import status from "http-status";
+import AppError from "../../../helper/AppError.js";
 import { prisma } from "../../lib/prisma.js";
 
 const handleBan = async (user_id: string) => {
@@ -9,7 +11,7 @@ const handleBan = async (user_id: string) => {
     },
   });
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError(status.NOT_FOUND, "User not found");
   }
   console.log("user got :", user);
   const updatedUser = await prisma.user.update({
@@ -32,7 +34,7 @@ const getUserById = async (user_id: string) => {
     },
   });
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError(status.NOT_FOUND, "User not found");
   }
   return user;
 };
@@ -47,7 +49,7 @@ const updateUserData = async (user_id: string, data: any) => {
     },
   });
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError(status.NOT_FOUND, "User not found");
   }
   const updatedUser = await prisma.user.update({
     where: {
@@ -70,7 +72,7 @@ const deleteUser = async (user_id: string) => {
     },
   });
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError(status.NOT_FOUND, "User not found");
   }
   await prisma.user.delete({
     where: {
@@ -87,7 +89,10 @@ const getTutorIdByUserId = async (user_id: string) => {
     },
   });
   if (!tutorProfile) {
-    throw new Error("Tutor profile not found for the given user ID");
+    throw new AppError(
+      status.NOT_FOUND,
+      "Tutor profile not found for the given user ID",
+    );
   }
   return tutorProfile.id;
 };

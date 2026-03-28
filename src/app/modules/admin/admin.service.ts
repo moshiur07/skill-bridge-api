@@ -1,3 +1,5 @@
+import status from "http-status";
+import AppError from "../../../helper/AppError.js";
 import { prisma } from "../../lib/prisma.js";
 
 const getAdminDashboardStats = async () => {
@@ -104,7 +106,10 @@ const createCategory = async (name: string, description: string) => {
   });
 
   if (existingCategory) {
-    throw new Error("Category with this name already exists");
+    throw new AppError(
+      status.BAD_REQUEST,
+      "Category with this name already exists",
+    );
   }
   return await prisma.category.create({
     data: {
@@ -123,7 +128,7 @@ const deleteCategory = async (categoryId: number) => {
   });
 
   if (!existingCategory) {
-    throw new Error("Category not found");
+    throw new AppError(status.NOT_FOUND, "Category not found");
   }
 
   return await prisma.category.delete({

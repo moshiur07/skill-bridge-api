@@ -1,13 +1,11 @@
+import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import { auth } from "./lib/auth.js";
+import { auth } from "./app/lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
-import { tutorRouter } from "./modules/tutor/tutor.routes.js";
-import { bookingsRouter } from "./modules/bookings/bookings.routes.js";
-import { reviewsRouter } from "./modules/reviews/review.routes.js";
-import { categoryRouter } from "./modules/categories/category.routes.js";
-import { usersRoutes } from "./modules/users/users.routes.js";
-import { adminRoutes } from "./modules/admin/admin.routes.js";
+import { notFound } from "./app/middleware/notFound";
+import { indexRoutes } from "./app/routes";
+import { envVars } from "./config/env";
 
 const allowedOrigins = [
   process.env.APP_URL || "http://localhost:3000",
@@ -18,55 +16,56 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 const app: Application = express();
+// previous
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       // Allow requests with no origin (mobile apps, Postman, etc.)
+//       if (!origin) return callback(null, true);
+
+//       // Check if origin is in allowedOrigins or matches deployment patterns
+//       const isAllowed =
+//         allowedOrigins.includes(origin) ||
+//         /^https:\/\/.*\.vercel\.app$/.test(origin) || // Vercel deployments
+//         /^https:\/\/.*\.onrender\.com$/.test(origin) || // Render deployments
+//         /^https:\/\/.*\.netlify\.app$/.test(origin); // Netlify deployments (optional)
+
+//       if (isAllowed) {
+//         callback(null, true);
+//       } else {
+//         console.warn(`CORS blocked origin: ${origin}`); // For debugging
+//         callback(new Error(`Origin ${origin} not allowed by CORS`));
+//       }
+//     },
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+//     exposedHeaders: ["Set-Cookie"],
+//   }),
+// );
+
+// testing with a simpler CORS setup first
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
-
-      // Check if origin is in allowedOrigins or matches deployment patterns
-      const isAllowed =
-        allowedOrigins.includes(origin) ||
-        /^https:\/\/.*\.vercel\.app$/.test(origin) || // Vercel deployments
-        /^https:\/\/.*\.onrender\.com$/.test(origin) || // Render deployments
-        /^https:\/\/.*\.netlify\.app$/.test(origin); // Netlify deployments (optional)
-
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        console.warn(`CORS blocked origin: ${origin}`); // For debugging
-        callback(new Error(`Origin ${origin} not allowed by CORS`));
-      }
-    },
+    origin: [
+      envVars.FRONTEND_URL,
+      envVars.BETTER_AUTH_URL,
+      "http://localhost:3000",
+      "http://localhost:5000",
+    ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
-    exposedHeaders: ["Set-Cookie"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
 // * better auth
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 app.use(express.json());
+app.use("/api", indexRoutes);
 
-// * Tutors
-app.use("/api/tutors", tutorRouter);
-
-// * Bookings
-app.use("/api/bookings", bookingsRouter);
-
-// * Reviews
-app.use("/api/reviews", reviewsRouter);
-
-// * category
-
-app.use("/api/category", categoryRouter);
-
-// * users
-app.use("/api/users", usersRoutes);
-
-// * admin
-
-app.use("/api/admin", adminRoutes);
+app.use(globalErrorHandler);
+app.use(notFound);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");

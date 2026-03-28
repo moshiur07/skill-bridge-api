@@ -1,5 +1,7 @@
 import { Role, TutorProfile } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+import AppError from "../../../helper/AppError.js";
+import status from "http-status";
 
 const createTutor = async (payload: any, user_id: string) => {
   const data = { ...payload, user_id };
@@ -222,7 +224,10 @@ const deleteAvailability = async (availabilityId: string) => {
     },
   });
   if (!avail || avail.is_booked) {
-    throw new Error("Only unbooked or completed slots can be removed.");
+    throw new AppError(
+      status.BAD_REQUEST,
+      "Only unbooked or completed slots can be removed.",
+    );
   }
   // return await prisma.availability.delete({
   //   where: {
@@ -250,7 +255,7 @@ const updateFeatured = async (tutorId: string) => {
   });
 
   if (!profile) {
-    throw new Error("Tutor profile not found");
+    throw new AppError(status.NOT_FOUND, "Tutor profile not found");
   }
 
   // 2. Update with the opposite value
@@ -271,7 +276,10 @@ const deleteTutor = async (tutorId: string) => {
     },
   });
   if (ongoingBooking) {
-    throw new Error("Tutor has ongoing bookings and cannot be deleted");
+    throw new AppError(
+      status.BAD_REQUEST,
+      "Tutor has ongoing bookings and cannot be deleted",
+    );
   }
   return await prisma.tutorProfile.delete({
     where: { id: tutorId },

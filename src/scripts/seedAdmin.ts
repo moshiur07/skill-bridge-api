@@ -1,5 +1,7 @@
 import { Role } from "@prisma/client";
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "../app/lib/prisma.js";
+import AppError from "../helper/AppError.js";
+import status from "http-status";
 
 const seedAdmin = async () => {
   try {
@@ -16,7 +18,8 @@ const seedAdmin = async () => {
       },
     });
     console.log(existingAdmin);
-    if (existingAdmin) throw new Error("Admin user already exists");
+    if (existingAdmin)
+      throw new AppError(status.CONFLICT, "Admin user already exists");
     const createAdmin = await fetch(
       `${process.env.BETTER_AUTH_URL}/sign-up/email`,
       {

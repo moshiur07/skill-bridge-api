@@ -3,6 +3,7 @@ import { bookingServices } from "./bookings.service.js";
 
 const createBooking = async (req: Request, res: Response) => {
   const user_id = req.user?.id;
+  console.log(user_id);
   const bookingData = req.body;
   try {
     const result = await bookingServices.createBooking(

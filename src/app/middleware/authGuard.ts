@@ -3,7 +3,7 @@ import { Role } from "@prisma/client";
 import { auth } from "../lib/auth.js";
 
 const authGuard = (...roles: Role[]) => {
-  return async function (req: Request, res: Response, next: NextFunction) {
+  return async function (req: any, res: Response, next: NextFunction) {
     try {
       const session = await auth.api.getSession({
         headers: req.headers as any,
