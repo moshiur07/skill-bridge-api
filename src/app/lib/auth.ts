@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma.js";
+import { Role } from "@prisma/client";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -17,7 +18,27 @@ export const auth = betterAuth({
     additionalFields: {
       role: {
         type: "string",
-        defaultValue: "student",
+        defaultValue: Role.student,
+        required: false,
+      },
+      isDeleted: {
+        type: "boolean",
+        defaultValue: false,
+        required: false,
+      },
+      isBanned: {
+        type: "boolean",
+        defaultValue: false,
+        required: false,
+      },
+      image: {
+        type: "string",
+        defaultValue: null,
+        required: false,
+      },
+      deletedAt: {
+        type: "date",
+        defaultValue: null,
         required: false,
       },
     },

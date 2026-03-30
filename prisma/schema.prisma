@@ -12,12 +12,12 @@ model User {
   role          Role          @default(student)
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt
-  name          String
+  name          String?
+  isDeleted     Boolean       @default(false)
   emailVerified Boolean       @default(false)
   image         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
   isBanned      Boolean       @default(false)
+  deletedAt     DateTime?
   bookings      Booking[]     @relation("student_bookings")
   tutor_profile TutorProfile?
   accounts      Account[]
@@ -34,6 +34,7 @@ model TutorProfile {
   user_id        String         @unique
   isFeatured     Boolean        @default(false)
   image          String?
+  isDeleted      Boolean        @default(false)
   availabilities Availability[]
   bookings       Booking[]
   schedules      Schedule[]
@@ -76,11 +77,30 @@ model Booking {
   tutor_id        String
   availability_id String        @unique
   duration_hours  Int
-  subject         String
+  subject         String?
   availability    Availability  @relation(fields: [availability_id], references: [id])
   student         User          @relation("student_bookings", fields: [student_id], references: [id])
   tutor           TutorProfile  @relation(fields: [tutor_id], references: [id])
   review          Review?
+  payment         Payment?
+}
+
+model Payment {
+  id                 String        @id @default(uuid(7))
+  amount             Float
+  transactionId      String        @unique @db.Uuid()
+  stripeEventId      String?       @unique
+  paymentStatus      BookingStatus @default(pending)
+  paymentGatewayData Json?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  booking_id String  @unique
+  booking    Booking @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+
+  @@index([booking_id])
+  @@index([transactionId])
+  @@map("payments")
 }
 
 model Review {

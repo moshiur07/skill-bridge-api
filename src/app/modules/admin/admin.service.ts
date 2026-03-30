@@ -43,13 +43,13 @@ const getUsersByAdmin = async (role?: string) => {
       image: true,
       role: true,
       isBanned: true,
-      createdAt: true,
+      created_at: true,
       tutor_profile: {
         select: { isFeatured: true },
       },
     },
     orderBy: {
-      createdAt: "desc",
+      created_at: "desc",
     },
   });
 

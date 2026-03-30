@@ -6,6 +6,7 @@ import { toNodeHandler } from "better-auth/node";
 import { notFound } from "./app/middleware/notFound";
 import { indexRoutes } from "./app/routes";
 import { envVars } from "./config/env";
+import { paymentController } from "./app/modules/payment/payment.controller";
 
 const allowedOrigins = [
   process.env.APP_URL || "http://localhost:3000",
@@ -43,6 +44,12 @@ const app: Application = express();
 //     exposedHeaders: ["Set-Cookie"],
 //   }),
 // );
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  paymentController.handleStripeWebhookEvent,
+);
 
 // testing with a simpler CORS setup first
 app.use(

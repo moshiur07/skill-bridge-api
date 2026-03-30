@@ -1,7 +1,7 @@
 import { tutorServices } from "./tutor.service.js";
 import { Request, Response } from "express";
 
-const createTutor = async (req: Request, res: Response) => {
+const createTutor = async (req: any, res: Response) => {
   const user_id = req.user?.id;
   try {
     const result = await tutorServices.createTutor(req.body, user_id!);

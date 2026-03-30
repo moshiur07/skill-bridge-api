@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { bookingServices } from "./bookings.service.js";
 
-const createBooking = async (req: Request, res: Response) => {
+const createBooking = async (req: any, res: Response) => {
   const user_id = req.user?.id;
   console.log(user_id);
   const bookingData = req.body;
@@ -23,7 +23,7 @@ const createBooking = async (req: Request, res: Response) => {
   }
 };
 
-const getBookings = async (req: Request, res: Response) => {
+const getBookings = async (req: any, res: Response) => {
   const user_id = req.user?.id;
   const role = req.user?.role;
   try {
@@ -43,7 +43,7 @@ const getBookings = async (req: Request, res: Response) => {
     });
   }
 };
-const getBookingById = async (req: Request, res: Response) => {
+const getBookingById = async (req: any, res: Response) => {
   const role = req.user?.role;
   const booking_id = req.params.id;
   try {
