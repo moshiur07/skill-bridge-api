@@ -69,6 +69,7 @@ app.use(
 // * better auth
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use("/api", indexRoutes);
 
 app.use(globalErrorHandler);

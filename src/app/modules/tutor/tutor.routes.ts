@@ -1,15 +1,21 @@
 import { Router } from "express";
 import { tutorController } from "./tutor.controller.js";
 import authGuard from "../../middleware/authGuard.js";
-import { validateRequest } from "../../../helper/validateSchema.js";
-import { createTutorZodSchema } from "./tutor.validation.js";
+// import { validateRequest } from "../../../helper/validateSchema.js";
+import {
+  createTutorZodSchema,
+  updateTutorZodSchema,
+} from "./tutor.validation.js";
+import { multerUpload } from "../../../config/multer.config.js";
+import { validateRequest } from "../../middleware/validateRequest.js";
 
 const router = Router();
 
 router.post(
   "/",
   authGuard("student", "tutor"),
-  // validateRequest(createTutorZodSchema),
+  multerUpload.single("image"),
+  validateRequest(createTutorZodSchema),
   tutorController.createTutor,
 );
 
@@ -21,7 +27,13 @@ router.put(
   authGuard("tutor"),
   tutorController.updateSchedule,
 );
-router.put("/:tutorId", authGuard("tutor"), tutorController.updateTutor);
+router.put(
+  "/:tutorId",
+  authGuard("tutor"),
+  validateRequest(updateTutorZodSchema),
+  multerUpload.single("image"),
+  tutorController.updateTutor,
+);
 
 router.get("/:tutorId/availability", tutorController.getAvailability);
 

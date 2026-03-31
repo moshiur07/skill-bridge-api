@@ -4,24 +4,26 @@ import AppError from "../../../helper/AppError.js";
 import status from "http-status";
 
 const createTutor = async (payload: any, user_id: string) => {
-  const data = { ...payload, user_id };
-  delete data.category;
-  const category: number[] = payload.category;
-  const result = await prisma.tutorProfile.create({ data });
+  console.log({ user_id, payload });
+
+  const { categories, ...rest } = payload; // destructure categories out
+  // const categories: number[] = categories;
+
+  const result = await prisma.tutorProfile.create({
+    data: { ...rest, user_id }, // categories is NOT included here
+  });
+
   if (result) {
     await prisma.$transaction([
-      //* Update  Role
       prisma.user.update({
         where: { id: user_id },
         data: { role: Role.tutor },
       }),
-
-      //* Connect Categories
       prisma.tutorProfile.update({
         where: { user_id: user_id },
         data: {
           categories: {
-            connect: category.map((id) => ({ id: Number(id) })),
+            connect: categories.map((id: any) => ({ id })),
           },
         },
       }),
@@ -29,6 +31,7 @@ const createTutor = async (payload: any, user_id: string) => {
 
     console.log("Role and Categories successfully updated");
   }
+
   return result;
 };
 
@@ -85,18 +88,27 @@ const getTutors = async ({
       },
     });
   }
-  const tutors: TutorProfile[] = await prisma.tutorProfile.findMany({
+  const tutors: any[] = await prisma.tutorProfile.findMany({
     skip,
     take: limit,
     where: {
       AND: andConditions,
     },
-    include: {
-      categories: true,
+    select: {
+      id: true,
+      bio: true,
+      hourly_rate: true,
+      rating_average: true,
+      image: true,
+      isFeatured: true,
       user: {
         select: {
           name: true,
-          email: true,
+        },
+      },
+      categories: {
+        select: {
+          name: true,
         },
       },
     },

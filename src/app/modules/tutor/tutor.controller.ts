@@ -4,7 +4,12 @@ import { Request, Response } from "express";
 const createTutor = async (req: any, res: Response) => {
   const user_id = req.user?.id;
   try {
-    const result = await tutorServices.createTutor(req.body, user_id!);
+    const payload = {
+      ...req.body,
+      image: req.file?.path,
+    };
+    console.log({ payload });
+    const result = await tutorServices.createTutor(payload, user_id!);
     console.log(result);
     res.status(201).json({
       success: true,

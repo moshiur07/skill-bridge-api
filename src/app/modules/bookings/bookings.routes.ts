@@ -1,10 +1,17 @@
 import { Router } from "express";
 import authGuard from "../../middleware/authGuard.js";
 import { bookingsController } from "./bookings.controller.js";
+import { createBookingZodSchema } from "./booking.validation.js";
+import { validateRequest } from "../../middleware/validateRequest.js";
 
 const router = Router();
 
-router.post("/", authGuard("student"), bookingsController.createBooking);
+router.post(
+  "/",
+  authGuard("student"),
+  validateRequest(createBookingZodSchema),
+  bookingsController.createBooking,
+);
 
 router.get(
   "/me",
