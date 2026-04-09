@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction } from "express";
 import { Response } from "express";
 import { Request } from "express";

@@ -1,4 +1,6 @@
-import { Role, TutorProfile } from "@prisma/client";
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Role } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import AppError from "../../../helper/AppError.js";
 import status from "http-status";

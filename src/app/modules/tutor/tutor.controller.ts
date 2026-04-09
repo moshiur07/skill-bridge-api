@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { tutorServices } from "./tutor.service.js";
 import { Request, Response } from "express";
 
@@ -154,7 +155,10 @@ const deleteAvailability = async (req: Request, res: Response) => {
 
 const updateTutor = async (req: Request, res: Response) => {
   const tutorId = req.params.tutorId;
-  const updateData = req.body;
+  const updateData = {
+    ...req.body,
+    image: req.file?.path,
+  };
   try {
     const updateTutorData = await tutorServices.updateTutor(
       tutorId as string,

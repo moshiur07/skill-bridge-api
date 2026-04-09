@@ -1,4 +1,5 @@
-import { NextFunction, Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextFunction, Response } from "express";
 import { Role } from "@prisma/client";
 import { auth } from "../lib/auth.js";
 

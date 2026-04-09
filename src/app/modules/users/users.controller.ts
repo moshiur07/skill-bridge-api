@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { userService } from "./users.service.js";
 import { Request, Response } from "express";
 const handleBan = async (req: Request, res: Response) => {

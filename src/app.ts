@@ -4,17 +4,18 @@ import cors from "cors";
 import { auth } from "./app/lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
 import { notFound } from "./app/middleware/notFound";
-import { indexRoutes } from "./app/routes";
+// import { indexRoutes } from "./app/routes";
 import { envVars } from "./config/env";
 import { paymentController } from "./app/modules/payment/payment.controller";
+import { indexRoutes } from "./app/routes/index";
 
-const allowedOrigins = [
-  process.env.APP_URL || "http://localhost:3000",
-  process.env.PROD_APP_URL,
-  "http://localhost:3000",
-  "http://localhost:4000",
-  "http://localhost:5000",
-].filter(Boolean);
+// const allowedOrigins = [
+//   process.env.APP_URL || "http://localhost:3000",
+//   process.env.PROD_APP_URL,
+//   "http://localhost:3000",
+//   "http://localhost:4000",
+//   "http://localhost:5000",
+// ].filter(Boolean);
 
 const app: Application = express();
 // previous
@@ -52,17 +53,23 @@ app.post(
 );
 
 // testing with a simpler CORS setup first
+// app.use(
+//   cors({
+//     origin: [
+//       envVars.FRONTEND_URL,
+//       envVars.BETTER_AUTH_URL,
+//       "http://localhost:3000",
+//       "http://localhost:5000",
+//     ],
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   }),
+// );
 app.use(
   cors({
-    origin: [
-      envVars.FRONTEND_URL,
-      envVars.BETTER_AUTH_URL,
-      "http://localhost:3000",
-      "http://localhost:5000",
-    ],
+    origin: envVars.FRONTEND_URL,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
@@ -72,11 +79,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", indexRoutes);
 
-app.use(globalErrorHandler);
-app.use(notFound);
-
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
 });
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;

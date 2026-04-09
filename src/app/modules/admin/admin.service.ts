@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import AppError from "../../../helper/AppError.js";
 import { prisma } from "../../lib/prisma.js";
@@ -43,13 +44,13 @@ const getUsersByAdmin = async (role?: string) => {
       image: true,
       role: true,
       isBanned: true,
-      created_at: true,
+      createdAt: true,
       tutor_profile: {
         select: { isFeatured: true },
       },
     },
     orderBy: {
-      created_at: "desc",
+      createdAt: "desc",
     },
   });
 

@@ -30,8 +30,8 @@ router.put(
 router.put(
   "/:tutorId",
   authGuard("tutor"),
-  validateRequest(updateTutorZodSchema),
   multerUpload.single("image"),
+  validateRequest(updateTutorZodSchema),
   tutorController.updateTutor,
 );
 

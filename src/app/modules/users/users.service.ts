@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import AppError from "../../../helper/AppError.js";
 import { prisma } from "../../lib/prisma.js";
@@ -25,7 +26,6 @@ const handleBan = async (user_id: string) => {
   console.log({ updatedUser, banning: user?.isBanned });
   return updatedUser;
 };
-``;
 
 const getUserById = async (user_id: string) => {
   const user = await prisma.user.findUnique({

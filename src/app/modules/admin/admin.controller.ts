@@ -1,3 +1,5 @@
+/* eslint-disable no-unsafe-optional-chaining */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { adminService } from "./admin.service.js";
 

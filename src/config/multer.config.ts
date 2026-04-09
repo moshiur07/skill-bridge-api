@@ -13,7 +13,7 @@ const storage = new CloudinaryStorage({
       .join(".")
       .toLowerCase()
       .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9\-]/g, "");
+      .replace(/[^a-z0-9\\-]/g, "");
 
     const uniqueName =
       Math.random().toString(36).substring(2) +

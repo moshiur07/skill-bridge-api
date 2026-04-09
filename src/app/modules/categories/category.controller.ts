@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Request, Response } from "express";
 import { categoryService } from "./category.service.js";
 import catchAsync from "../../../helper/controllerHandler.js";
@@ -11,7 +13,7 @@ const addCategory = async (req: Request, res: Response) => {
       success: true,
       data: newCategory,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to add category",
