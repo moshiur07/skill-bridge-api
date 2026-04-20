@@ -1,162 +1,128 @@
-# Skill Bridge API 🚀
+# Skill Bridge - API 🚀
 
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)](https://stripe.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
 
-**Skill Bridge API** is a robust, scalable, and production-ready backend system designed for a modern tutoring and skill-sharing platform. Built with **TypeScript**, **Express.js**, and **Prisma**, it provides a comprehensive suite of features including user management, tutor profiles, scheduling, booking systems, and secure payment processing.
-
----
-
-## 🌟 Key Features
-
--   **👤 Advanced User Management**: Role-based access control (RBAC) for Students, Tutors, and Admins.
--   **👨‍🏫 Tutor Ecosystem**: Rich tutor profiles with bios, hourly rates, categories, and featured status.
--   **📅 Smart Scheduling**: Tutors can manage their availability; students can book specific time slots.
--   **💳 Secure Payments**: Integrated with **Stripe** for seamless transaction processing and webhook handling.
--   **🔐 Robust Authentication**: Powered by **Better Auth**, supporting secure sessions and Google OAuth.
--   **📁 Media Management**: Cloud-based image uploads via **Cloudinary** and **Multer**.
--   **⭐ Review System**: Feedback loop where students can rate and review their tutoring sessions.
--   **🛡️ Type Safety**: End-to-end type safety with **TypeScript** and schema validation using **Zod**.
--   **🏗️ Modular Architecture**: Clean, domain-driven structure for easy scalability and maintenance.
+**Skill Bridge API** is a high-performance, modular backend system designed for a modern tutoring platform. It manages complex workflows including tutor vetting, session scheduling, and secure multi-party payments.
 
 ---
 
-## 🛠️ Technologies Used
+## 🌟 Core Modules
 
--   **Runtime**: [Node.js](https://nodejs.org/) (LTS)
--   **Framework**: [Express.js](https://expressjs.com/) (v5)
--   **Language**: [TypeScript](https://www.typescriptlang.org/)
--   **ORM**: [Prisma](https://www.prisma.io/)
--   **Database**: [PostgreSQL](https://www.postgresql.org/) (Neon DB)
--   **Authentication**: [Better Auth](https://better-auth.com/)
--   **Payment**: [Stripe API](https://stripe.com/docs/api)
--   **File Storage**: [Cloudinary](https://cloudinary.com/)
--   **Validation**: [Zod](https://zod.dev/)
+- **👤 Users & RBAC**: Advanced role management (Admin, Tutor, Student) with secure session handling via **Better Auth**.
+- **👨‍🏫 Tutor Management**: Comprehensive tutor profiles, skill verification, and featured placement logic.
+- **📅 Booking System**: Atomic scheduling engine to prevent double-bookings and manage session states.
+- **💳 Payment Gateway**: Robust **Stripe** integration supporting checkout flows and asynchronous webhook processing.
+- **📁 Media Engine**: Cloud-native image management using **Cloudinary** and **Multer**.
+- **📊 Analytics & Reviews**: Data-driven feedback system for session quality and tutor performance.
+- **🛡️ Validation**: Strict runtime schema validation using **Zod** for all incoming request payloads.
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Technology Stack
 
-### Prerequisites
-
--   **Node.js** (v18 or higher)
--   **npm** or **yarn**
--   **PostgreSQL** instance (or Neon DB account)
--   **Stripe** account (for payments)
--   **Cloudinary** account (for file uploads)
-
-### Installation
-
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/your-username/skill-bridge-api.git
-    cd skill-bridge-api
-    ```
-
-2.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
-
-3.  **Environment Setup**:
-    Create a `.env` file in the root directory and populate it with the required variables (see [Environment Variables](#-environment-variables) section).
-
-4.  **Database Migration**:
-    ```bash
-    npm run migrate
-    ```
-
-5.  **Generate Prisma Client**:
-    ```bash
-    npm run generate
-    ```
-
-6.  **Seed Data** (Optional):
-    ```bash
-    npm run seed:category
-    npm run seed:admin
-    ```
-
-7.  **Start Development Server**:
-    ```bash
-    npm run dev
-    ```
+- **Runtime**: Node.js (LTS)
+- **Framework**: Express.js v5 (Next-gen Express)
+- **Database**: PostgreSQL (hosted on Neon DB)
+- **ORM**: Prisma (with Type-safe Client generation)
+- **Authentication**: Better Auth (with Prisma adapter)
+- **Payments**: Stripe API
+- **File Storage**: Cloudinary
+- **Validation**: Zod
+- **Utilities**: http-status, cors, dotenv
 
 ---
 
-## 🔑 Environment Variables
+## 🏗️ Architecture
 
-The following environment variables are required to run the application:
-
-| Variable | Description |
-| :--- | :--- |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `BETTER_AUTH_SECRET` | Secret key for Better Auth |
-| `BETTER_AUTH_URL` | Base URL for authentication endpoints |
-| `STRIPE_SECRET_KEY` | Stripe Secret API Key |
-| `STRIPE_WEBHOOK_SECRET` | Stripe Webhook Signing Secret |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary Cloud Name |
-| `CLOUDINARY_API_KEY` | Cloudinary API Key |
-| `CLOUDINARY_API_SECRET` | Cloudinary API Secret |
-| `FRONTEND_URL` | URL of the client application |
-
----
-
-## 📁 Project Structure
+The API follows a **Domain-Driven Design (DDD)** approach, organized into self-contained modules:
 
 ```text
 src/
 ├── app/
-│   ├── modules/        # Domain-driven modules (User, Tutor, Booking, etc.)
-│   │   ├── admin/
-│   │   ├── bookings/
-│   │   ├── categories/
-│   │   ├── payment/
-│   │   ├── reviews/
-│   │   ├── tutor/
-│   │   └── users/
-│   ├── middleware/     # Global and route-specific middleware
-│   ├── routes/         # Centralized routing logic
-│   └── lib/            # External library configurations
-├── config/             # Application configuration
-├── interfaces/         # Global TypeScript interfaces
-├── helper/             # Utility functions
-└── server.ts           # Entry point
-prisma/                 # Database schema and migrations
-scripts/                # Build and maintenance scripts
+│   ├── modules/        # Domain Modules
+│   │   ├── admin/      # System administration
+│   │   ├── bookings/   # Scheduling & session logic
+│   │   ├── categories/ # Skill categorization
+│   │   ├── payment/    # Stripe integration
+│   │   ├── reviews/    # Feedback & ratings
+│   │   ├── tutor/      # Tutor profiles & availability
+│   │   └── users/      # Identity management
+│   ├── middleware/     # Global & route-specific security
+│   └── routes/         # Unified route registry
+├── config/             # External service configurations
+├── interfaces/         # Shared TypeScript interfaces
+└── server.ts           # Server entry point
 ```
+
+---
+
+## 🚦 Getting Started
+
+### Prerequisites
+- **Node.js** (v18+)
+- **PostgreSQL** instance
+- **Stripe** API Keys
+- **Cloudinary** API Keys
+
+### Installation
+
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Database Setup**:
+   ```bash
+   # Sync schema with database
+   npm run migrate
+   
+   # Generate Prisma client
+   npm run generate
+   ```
+
+3. **Seeding Data** (Optional):
+   ```bash
+   npm run seed:category
+   npm run seed:admin
+   ```
+
+4. **Environment Configuration**:
+   Create a `.env` file with your credentials (see `.env.example`).
+
+5. **Start Server**:
+   ```bash
+   npm run dev
+   ```
 
 ---
 
 ## 📜 Available Scripts
 
--   `npm run dev`: Starts the development server with hot-reload via `tsx`.
--   `npm run build`: Generates Prisma client, compiles TypeScript, and runs build scripts.
--   `npm run start`: Starts the production server.
--   `npm run lint`: Runs ESLint for code quality checks.
--   `npm run migrate`: Executes Prisma migrations.
--   `npm run studio`: Opens Prisma Studio to view/edit database data.
--   `npm run seed:admin`: Seeds the initial admin user.
--   `npm run stripe:webhook`: Proxies Stripe webhooks to the local server.
+- `npm run dev`: Start development server with `tsx` watch mode.
+- `npm run build`: Build the project for production.
+- `npm run start`: Run the compiled production server.
+- `npm run migrate`: Execute Prisma migrations.
+- `npm run studio`: Open Prisma Studio to manage data visually.
+- `npm run stripe:webhook`: Proxy Stripe webhooks to your local environment.
 
 ---
 
-## 🛡️ License
-
-This project is licensed under the [ISC License](LICENSE).
+## 🛡️ Security
+- **Type Safety**: 100% TypeScript coverage for end-to-end type safety.
+- **Validation**: Zod schemas for every endpoint.
+- **Auth**: Production-ready sessions with CSRF protection.
 
 ---
 
 ## 👤 Author
-
 **Moshiur Rahman**
--   Website: [moshiur.dev](https://moshiur.dev)
--   GitHub: [@moshiur07](https://github.com/moshiur07)
+- GitHub: [@moshiur07](https://github.com/moshiur07)
+- Website: [moshiur.dev](https://moshiur-rahman-dev.netlify.app/)
 
 ---
-
-*Made with ❤️ for the Skill Bridge Community.*
+*Powering the future of skill exchange.*
