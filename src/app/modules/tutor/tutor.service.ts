@@ -1,9 +1,10 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Role } from "@prisma/client";
+// import { Role } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import AppError from "../../../helper/AppError.js";
 import status from "http-status";
+import { Role } from "../../../generated/enums.js";
 
 const createTutor = async (payload: any, user_id: string) => {
   console.log({ user_id, payload });

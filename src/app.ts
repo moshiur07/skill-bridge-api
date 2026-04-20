@@ -77,11 +77,14 @@ app.use(
 app.all("/api/auth/{*any}", toNodeHandler(auth));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/api", indexRoutes);
-
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
+  res.json({
+    message: "Skill Bridge API is running",
+    version: "1.0.0",
+    status: "healthy",
+  });
 });
+app.use("/api", indexRoutes);
 app.use(globalErrorHandler);
 app.use(notFound);
 

@@ -1,8 +1,9 @@
 import { envVars } from "./../config/env";
-import { Role } from "@prisma/client";
 import { prisma } from "../app/lib/prisma.js";
 import AppError from "../helper/AppError.js";
 import status from "http-status";
+import { Role } from "../generated/enums";
+// import { Role } from "../generated/enums";
 
 const seedAdmin = async () => {
   try {

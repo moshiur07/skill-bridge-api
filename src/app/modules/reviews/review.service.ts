@@ -1,4 +1,5 @@
-import { BookingStatus } from "@prisma/client";
+// import { BookingStatus } from "@prisma/client";
+import { BookingStatus } from "../../../generated/enums.js";
 import { prisma } from "../../lib/prisma.js";
 
 const createReview = async (

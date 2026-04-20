@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Stripe from "stripe";
 import { prisma } from "../../lib/prisma";
-import { BookingStatus } from "@prisma/client";
+import { BookingStatus } from "../../../generated/enums";
 
 const handleStripeWebhookEvent = async (event: Stripe.Event) => {
   const existingPayment = await prisma.payment.findFirst({

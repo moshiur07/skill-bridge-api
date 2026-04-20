@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Response } from "express";
-import { Role } from "@prisma/client";
+// import { Role } from "@prisma/client";
 import { auth } from "../lib/auth.js";
+import { Role } from "../../generated/enums.js";
 
 const authGuard = (...roles: Role[]) => {
   return async function (req: any, res: Response, next: NextFunction) {

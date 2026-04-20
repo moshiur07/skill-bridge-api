@@ -1,7 +1,8 @@
-import { BookingStatus } from "@prisma/client";
+// import { BookingStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import AppError from "../../../helper/AppError.js";
 import status from "http-status";
+import { BookingStatus } from "../../../generated/enums.js";
 
 const createBooking = async (
   bookingData: {
